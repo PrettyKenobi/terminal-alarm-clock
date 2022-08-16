@@ -1,0 +1,8 @@
+* Terminal Alarm Clock README
+
+** Purpose
+
+An easy to use-egg timer that runs in the terminal.
+
+** Usage
+
