@@ -6,6 +6,7 @@ package cmd
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -13,17 +14,19 @@ import (
 // startCmd represents the start command
 var startCmd = &cobra.Command{
 	Use:   "start",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Start a new alarm",
+	Long: `Start a new alarm.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("start called")
+		//fmt.Println("start called")
+		// TODO check if name provided, prompt for one if false
+		// TODO check that name is unused, prompt for a different name if false
+		// TODO check if duration provided, prompt if false
 	},
 }
+
+var name string
+var start int64
+var end string
 
 func init() {
 	rootCmd.AddCommand(startCmd)
@@ -37,4 +40,7 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// startCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	startCmd.Flags().StringP("name", "n", "The name of what you want to track.")
+	startCmd.Flags().Var(&end, "duration", "d", "5min", "How long to set the alarm for.")
+
 }
