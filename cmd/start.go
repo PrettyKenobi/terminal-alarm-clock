@@ -41,6 +41,6 @@ func init() {
 	// is called directly, e.g.:
 	// startCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	startCmd.Flags().StringP("name", "n", "The name of what you want to track.")
-	startCmd.Flags().Var(&end, "duration", "d", "5min", "How long to set the alarm for.")
+	startCmd.Flags().Var(&end, "time", "t", "5min", "How long to set the alarm for.")
 
 }
