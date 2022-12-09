@@ -1,0 +1,29 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://github.com/PrettyKenobi/terminal-alarm-clock/tools/timers_schema.json",
+    "title": "Timer",
+    "description": "The information that the terminal alarm clock app reads and writes in order to do its thing.",
+    "type": "object",
+    "properties": {
+	"name": {
+	    "description": "The unique identifier for a timer",
+	    "type": "string"
+	},
+	"start": {
+	    "description": "The timer's start date and time in extended ISO 8051 format, including time offset.",
+	    "type": "string"
+	}
+	"fullDuration": {
+	    "description": "The period the timer is to run for in extended ISO 8051 format.",
+	    "type": "string"
+	},
+	"ranDuration": {
+	    "description": "The period the timer has run so far in extended ISO 8051 format."  
+	},
+	"end": {
+	    "description":  "The timer's end date and time in extended ISO 8051 format.",
+	    "type": "string"
+	}
+    },
+    "required": [ "name", "start", "end" ]
+}
