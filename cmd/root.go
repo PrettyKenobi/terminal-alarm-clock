@@ -24,10 +24,10 @@ var rootCmd = &cobra.Command{
 		logger, err := zap.NewDevelopment()
 		defer logger.Sync()
 		sugar := logger.Sugar()
-		if err != nil{
+		if err != nil {
 			print("Could not make logger.")
 		}
-		
+
 		currOs := runtime.GOOS
 
 		switch currOs {
@@ -42,6 +42,7 @@ var rootCmd = &cobra.Command{
 						// TODO: Log that we created timers.json
 						sugar.Infow("Created timers.json.",
 							"time", time.Now(),
+							"file", f.Name(),
 						)
 					}
 				}
@@ -56,6 +57,10 @@ var rootCmd = &cobra.Command{
 						err := os.Mkdir("terminal-alarm-clock", 0750)
 						if err == nil {
 							// TODO: Log that we made the directory
+							sugar.Infow("Created tac folder",
+								"time", time.Now(),
+								"dir_name", "terminal-alarm-clock",
+							)
 							os.Chdir("terminal-alarm-clock")
 						}
 					}
@@ -63,7 +68,9 @@ var rootCmd = &cobra.Command{
 					f, err := os.Stat("timers.json")
 					if err == os.ErrNotExist {
 						os.Create("timers.json")
-						// TODO: Log that we made the file
+						sugar.Infow("Created timers.json",
+							"time", time.Now,
+							"file_name", f.Name())
 					}
 				}
 			}
@@ -89,4 +96,3 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.s
 }
-

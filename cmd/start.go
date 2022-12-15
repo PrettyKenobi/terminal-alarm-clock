@@ -11,7 +11,7 @@ import (
 
 // Startcmd Represents The Start Command
 var startCmd = &cobra.Command{
-	Use:   "Start name {-t time | -l length}",
+	Use:   "start name {-t time | -l length}",
 	Short: "Start a new timer called name",
 	Long: `Start a new timer called name that will finish at time or is to run for length.`,
 	Example: `start tea -l 5m
@@ -27,8 +27,8 @@ start party -t Nov 5, 2025`,
 }
 
 // Parse as part of PreRunE
-var name string
-var start string
+//var name string
+//var start string
 var length string
 var end string
 
