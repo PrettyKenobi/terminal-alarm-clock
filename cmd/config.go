@@ -6,9 +6,9 @@ package cmd
 
 import (
 	"fmt"
-	"os"
+	//"os"
 
-	homedir "github.com/mitchellh/go-homedir"
+	//homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 )
 
@@ -29,6 +29,6 @@ func init() {
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	configCmd.PersistentFlags().String()
+	//configCmd.PersistentFlags().String()
 }
 

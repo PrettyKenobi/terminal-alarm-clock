@@ -8,7 +8,7 @@ OUTPUT_DIR=out/bin
 
 build:
 	mkdir -p $(OUTPUT_DIR)
-	GO111MODULE= on $(GOCMD) build -mod vendor -o $(OUTPUT_DIR)/$(BINARY_NAME) .
+	$(GOCMD) build -mod vendor -o $(OUTPUT_DIR)/$(BINARY_NAME) .
 
 clean:
 	rm -fr ./bin

@@ -1,21 +1,23 @@
 /*
-Copyright © 2022 NAME HERE <EMAIL ADDRESS>
-
+Copyright © 2022 Ken Bonnstetter <pretteykenobi@gmail.com>
 */
 package cmd
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/spf13/cobra"
 )
 
-// startCmd represents the start command
+// Startcmd Represents The Start Command
 var startCmd = &cobra.Command{
-	Use:   "start",
-	Short: "Start a new alarm",
-	Long: `Start a new alarm.`,
+	Use:   "Start name {-t time | -l length}",
+	Short: "Start a new timer called name",
+	Long: `Start a new timer called name that will finish at time or is to run for length.`,
+	Example: `start tea -l 5m
+start party -t Nov 5, 2025`,
+	ValidArgs: []string{"name"},
+	Args: cobra.OnlyValidArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		//fmt.Println("start called")
 		// TODO check if name provided, prompt for one if false
@@ -24,23 +26,23 @@ var startCmd = &cobra.Command{
 	},
 }
 
+// Parse as part of PreRunE
 var name string
-var start int64
+var start string
+var length string
 var end string
 
 func init() {
-	rootCmd.AddCommand(startCmd)
+ 	rootCmd.AddCommand(startCmd)
 
-	// Here you will define your flags and configuration settings.
+	startCmd.Flags().StringVarP(&length, "length", "l", "5min", "How long the timer will run for.")
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// startCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// startCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	startCmd.Flags().StringP("name", "n", "The name of what you want to track.")
-	startCmd.Flags().Var(&end, "time", "t", "5min", "How long to set the alarm for.")
-
+	current_time := time.Now()
+	default_end := current_time.Add(time.Hour).String()
+	startCmd.Flags().StringVarP(&end, "time", "t", default_end, "A specific time for the timer to end.")
 }
+
+
+// func parseStartInput(c *cobra.Command, args []string) error {
+	
+// }
