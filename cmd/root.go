@@ -20,63 +20,7 @@ var rootCmd = &cobra.Command{
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		logger, err := zap.NewDevelopment()
-		defer logger.Sync()
-		sugar := logger.Sugar()
-		if err != nil {
-			print("Could not make logger.")
-		}
-
-		currOs := runtime.GOOS
-
-		switch currOs {
-		case "windows":
-			{
-				// Checks for timers.json in user's directory
-				err := os.Chdir("~")
-				if err == nil {
-					f, err := os.Stat("timers.json")
-					if err == os.ErrNotExist {
-						os.Create("timers.json")
-						// TODO: Log that we created timers.json
-						sugar.Infow("Created timers.json.",
-							"time", time.Now(),
-							"file", f.Name(),
-						)
-					}
-				}
-			}
-		default:
-			{
-				// Check for .config/terminal-alarm-clock, create if it doesn't exist
-				err := os.Chdir("~/.config")
-				if err == nil {
-					err := os.Chdir("terminal-alarm-clock")
-					if err == os.ErrNotExist {
-						err := os.Mkdir("terminal-alarm-clock", 0750)
-						if err == nil {
-							// TODO: Log that we made the directory
-							sugar.Infow("Created tac folder",
-								"time", time.Now(),
-								"dir_name", "terminal-alarm-clock",
-							)
-							os.Chdir("terminal-alarm-clock")
-						}
-					}
-					// Our config directory exists so time to check for timers.json
-					f, err := os.Stat("timers.json")
-					if err == os.ErrNotExist {
-						os.Create("timers.json")
-						sugar.Infow("Created timers.json",
-							"time", time.Now,
-							"file_name", f.Name())
-					}
-				}
-			}
-			//file exists
-		}
-	},
+	PersistentPreRun: checkForTimersFile,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -95,4 +39,61 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.s
+}
+func checkForTimersFile(cmd *cobra.Command, args []string) {
+	logger, err := zap.NewDevelopment()
+	defer logger.Sync()
+	sugar := logger.Sugar()
+	if err != nil {
+		print("Could not make logger.")
+	}
+
+	currOs := runtime.GOOS
+
+	switch currOs {
+	case "windows":
+		{
+			// Checks for timers.json in user's directory
+			err := os.Chdir("~")
+			if err == nil {
+				f, err := os.Stat("timers.json")
+				if err == os.ErrNotExist {
+					os.Create("timers.json")
+					// TODO: Log that we created timers.json
+					sugar.Infow("Created timers.json.",
+						"time", time.Now(),
+						"file", f.Name(),
+					)
+				}
+			}
+		}
+	default:
+		{
+			// Check for .config/terminal-alarm-clock, create if it doesn't exist
+			err := os.Chdir("~/.config")
+			if err == nil {
+				err := os.Chdir("terminal-alarm-clock")
+				if err == os.ErrNotExist {
+					err := os.Mkdir("terminal-alarm-clock", 0750)
+					if err == nil {
+						// TODO: Log that we made the directory
+						sugar.Infow("Created tac folder",
+							"time", time.Now(),
+							"dir_name", "terminal-alarm-clock",
+						)
+						os.Chdir("terminal-alarm-clock")
+					}
+				}
+				// Our config directory exists so time to check for timers.json
+				f, err := os.Stat("timers.json")
+				if err == os.ErrNotExist {
+					os.Create("timers.json")
+					sugar.Infow("Created timers.json",
+						"time", time.Now,
+						"file_name", f.Name())
+				}
+			}
+		}
+		//file exists
+	}
 }
