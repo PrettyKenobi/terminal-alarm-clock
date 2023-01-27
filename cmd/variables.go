@@ -5,3 +5,4 @@ import (
 )
 
 var currFs = afero.NewOsFs()
+var prod = false

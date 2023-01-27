@@ -5,9 +5,10 @@ package cmd
 
 import (
 	"os"
-	"runtime"
+	"path/filepath"
 	"time"
 
+	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 )
@@ -41,54 +42,42 @@ func init() {
 	// when this action is called directly.s
 }
 
+// See if a file called `tac-timers.json` exists in the user's home directory.
+// Create the file if it doesn't exist.
 func checkForTimersFile(cmd *cobra.Command, args []string) {
-	logger, err := zap.NewDevelopment()
+	// Create logger with zap
+	// Create development logger in development environment
+	var logger,err = zap.NewDevelopment()
+	if prod != false {
+		// Create production logger if in production
+		logger, err = zap.NewProduction()
+	} 
 	defer logger.Sync()
+	// Use the more relaxed version of the zap logger
 	sugar := logger.Sugar()
 	if err != nil {
 		print("Could not make logger.")
 	}
 
-	currOs := runtime.GOOS
-
-	switch currOs {
-	case "windows":
-		{
-			// Save current directory
-			originalDir := currFs.Name()
-			// Checks for timers.json in user's directory
-			err := currFs.Chdir("~")
-			if err == nil {
-				f, err := currFs.Stat("timers.json")
-				if err == currFs.ErrNotExist {
-					currFs.Create("timers.json")
-					// TODO: Log that we created timers.json
-					sugar.Infow("Created timers.json.",
-						"time", time.Now(),
-						"file", f.Name(),
-					)
-				}
-				// Move back to original directory
-				err = currFs.Chdir(currDir)
-				if err != nil {
-					sugar.Errorw("Couldn't go back to orginal directory", "time", time.Now(), "pwd", currFs.Name(), "original directory", currDir, "error", err)
-				}
-				sugar.Infow("Changed back to original directory",
-					"time", time.Now(),
-					"original directory", currDir)
-			}
-		}
-	default:
-		{
-			// Check for timers.json & create if it doesn't exist
-			f, err := currFs.Stat("timers.json")
-			if err == currFs.Exists() {
-				currFs.Create("timers.json")
-				sugar.Infow("Created timers.json",
-					"time", time.Now,
-					"file_name", f.Name())
-			}
-		}
-		//file exists
+	// Get user's home diretory.
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		sugar.Errorw("Cannot get user home directory",
+	"time", time.Now())
+	}
+	// Check for `tac-timers.json` in the home directory
+	filePath := filepath.Join(homeDir, ".tac-timers.json")
+	exists, err := afero.Exists(currFs, filePath)
+	if err!= nil {
+	sugar.Errorw("Unable to check for `tac-timers.json`",
+	"time", time.Now())
+	}
+	if exists == false {
+		// File doesn't exist
+		currFs.Create(filePath)
+		sugar.Infow("Created `tac-timers.json`.", "time", time.Now())
+	} else {
+		//File does exist.
+		sugar.Infow("`tac-timers.json` already exists.", "time", time.Now())
 	}
 }
