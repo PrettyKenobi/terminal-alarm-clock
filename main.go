@@ -9,3 +9,4 @@ import "github.com/PrettyKenobi/terminal-alarm-clock/cmd"
 func main() {
 	cmd.Execute()
 }
+

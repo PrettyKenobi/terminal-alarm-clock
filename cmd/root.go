@@ -40,6 +40,7 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.s
 }
+
 func checkForTimersFile(cmd *cobra.Command, args []string) {
 	logger, err := zap.NewDevelopment()
 	defer logger.Sync()
@@ -53,45 +54,39 @@ func checkForTimersFile(cmd *cobra.Command, args []string) {
 	switch currOs {
 	case "windows":
 		{
+			// Save current directory
+			originalDir := currFs.Name()
 			// Checks for timers.json in user's directory
-			err := os.Chdir("~")
+			err := currFs.Chdir("~")
 			if err == nil {
-				f, err := os.Stat("timers.json")
-				if err == os.ErrNotExist {
-					os.Create("timers.json")
+				f, err := currFs.Stat("timers.json")
+				if err == currFs.ErrNotExist {
+					currFs.Create("timers.json")
 					// TODO: Log that we created timers.json
 					sugar.Infow("Created timers.json.",
 						"time", time.Now(),
 						"file", f.Name(),
 					)
 				}
+				// Move back to original directory
+				err = currFs.Chdir(currDir)
+				if err != nil {
+					sugar.Errorw("Couldn't go back to orginal directory", "time", time.Now(), "pwd", currFs.Name(), "original directory", currDir, "error", err)
+				}
+				sugar.Infow("Changed back to original directory",
+					"time", time.Now(),
+					"original directory", currDir)
 			}
 		}
 	default:
 		{
-			// Check for .config/terminal-alarm-clock, create if it doesn't exist
-			err := os.Chdir("~/.config")
-			if err == nil {
-				err := os.Chdir("terminal-alarm-clock")
-				if err == os.ErrNotExist {
-					err := os.Mkdir("terminal-alarm-clock", 0750)
-					if err == nil {
-						// TODO: Log that we made the directory
-						sugar.Infow("Created tac folder",
-							"time", time.Now(),
-							"dir_name", "terminal-alarm-clock",
-						)
-						os.Chdir("terminal-alarm-clock")
-					}
-				}
-				// Our config directory exists so time to check for timers.json
-				f, err := os.Stat("timers.json")
-				if err == os.ErrNotExist {
-					os.Create("timers.json")
-					sugar.Infow("Created timers.json",
-						"time", time.Now,
-						"file_name", f.Name())
-				}
+			// Check for timers.json & create if it doesn't exist
+			f, err := currFs.Stat("timers.json")
+			if err == currFs.Exists() {
+				currFs.Create("timers.json")
+				sugar.Infow("Created timers.json",
+					"time", time.Now,
+					"file_name", f.Name())
 			}
 		}
 		//file exists
