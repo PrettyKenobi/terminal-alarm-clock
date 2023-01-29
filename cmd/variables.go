@@ -6,3 +6,7 @@ import (
 
 var currFs = afero.NewOsFs()
 var prod = false
+
+//var muFS sync.Mutex
+
+// var muProd sync.Mutex

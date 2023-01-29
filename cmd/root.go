@@ -6,7 +6,6 @@ package cmd
 import (
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
@@ -21,7 +20,7 @@ var rootCmd = &cobra.Command{
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
-	PersistentPreRun: checkForTimersFile,
+	// PersistentPreRun: checkForTimersFile,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -39,19 +38,20 @@ func init() {
 	// will be global for your application.
 
 	// Cobra also supports local flags, which will only run
-	// when this action is called directly.s
+	// when this action is called directly.
+	//checkForTimersFile()
 }
 
 // See if a file called `tac-timers.json` exists in the user's home directory.
 // Create the file if it doesn't exist.
-func checkForTimersFile(cmd *cobra.Command, args []string) {
+func checkForTimersFile() {
 	// Create logger with zap
 	// Create development logger in development environment
-	var logger,err = zap.NewDevelopment()
-	if prod != false {
+	var logger, err = zap.NewDevelopment()
+	if prod {
 		// Create production logger if in production
 		logger, err = zap.NewProduction()
-	} 
+	}
 	defer logger.Sync()
 	// Use the more relaxed version of the zap logger
 	sugar := logger.Sugar()
@@ -62,22 +62,20 @@ func checkForTimersFile(cmd *cobra.Command, args []string) {
 	// Get user's home diretory.
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		sugar.Errorw("Cannot get user home directory",
-	"time", time.Now())
+		sugar.Errorw("Cannot get user home directory")
 	}
 	// Check for `tac-timers.json` in the home directory
 	filePath := filepath.Join(homeDir, ".tac-timers.json")
 	exists, err := afero.Exists(currFs, filePath)
-	if err!= nil {
-	sugar.Errorw("Unable to check for `tac-timers.json`",
-	"time", time.Now())
+	if err != nil {
+		sugar.Errorw("Unable to check for `tac-timers.json`")
 	}
-	if exists == false {
+	if !exists {
 		// File doesn't exist
 		currFs.Create(filePath)
-		sugar.Infow("Created `tac-timers.json`.", "time", time.Now())
+		sugar.Infow("Created `tac-timers.json`.")
 	} else {
 		//File does exist.
-		sugar.Infow("`tac-timers.json` already exists.", "time", time.Now())
+		sugar.Infow("`tac-timers.json` already exists.")
 	}
 }
